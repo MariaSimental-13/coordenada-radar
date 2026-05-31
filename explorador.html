@@ -335,9 +335,33 @@
   </footer>
 
   <script>
-    var ANTHROPIC_KEY = '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';
+    var ANTHROPIC_KEY = localStorage.getItem('cmx_api_key') || '';
+
+    function pedirApiKey() {
+      var modal = document.getElementById('apiKeyModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function guardarApiKey() {
+      var input = document.getElementById('apiKeyInput').value.trim();
+      if (!input || !input.startsWith('sk-ant')) {
+        alert('Por favor ingresa una API key válida (empieza con sk-ant...)');
+        return;
+      }
+      localStorage.setItem('cmx_api_key', input);
+      ANTHROPIC_KEY = input;
+      document.getElementById('apiKeyModal').style.display = 'none';
+      explorar();
+    }
+
+    function verificarKey() {
+      ANTHROPIC_KEY = localStorage.getItem('cmx_api_key') || '';
+      if (!ANTHROPIC_KEY) { pedirApiKey(); return false; }
+      return true;
+    }
 
     function explorar() {
+      if (!verificarKey()) return;
       var concepto = document.getElementById('conceptInput').value.trim();
       if (!concepto) {
         alert('Escribe tu concepto primero 🎨');
@@ -422,5 +446,19 @@
     }
   </script>
 
+  <!-- Modal API Key -->
+  <div id="apiKeyModal" style="display:none;position:fixed;inset:0;background:rgba(30,26,22,0.85);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:var(--crema);border-radius:16px;padding:2.5rem;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="font-size:10px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;color:var(--tierra);margin-bottom:0.75rem;">Configuración</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--carbon);margin-bottom:0.5rem;">API Key de Anthropic</div>
+      <p style="font-size:13px;font-weight:300;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;">Ingresa tu API key para activar el Radar. Se guarda solo en tu navegador — nadie más puede verla.</p>
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." style="width:100%;padding:13px 16px;font-family:'Outfit',sans-serif;font-size:14px;border:1.5px solid var(--arena);border-radius:4px;outline:none;margin-bottom:1rem;color:var(--carbon);background:white;"/>
+      <div style="display:flex;gap:10px;">
+        <button onclick="guardarApiKey()" style="flex:1;background:var(--carbon);color:var(--crema);border:none;padding:13px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;border-radius:4px;cursor:pointer;">Guardar y analizar</button>
+        <button onclick="document.getElementById('apiKeyModal').style.display='none'" style="background:transparent;color:var(--muted);border:1.5px solid var(--arena);padding:13px 20px;font-family:'Outfit',sans-serif;font-size:12px;border-radius:4px;cursor:pointer;">Cancelar</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:1rem;line-height:1.6;">Consigue tu key en <a href="https://console.anthropic.com" target="_blank" style="color:var(--tierra);">console.anthropic.com</a></p>
+    </div>
+  </div>
 </body>
 </html>
