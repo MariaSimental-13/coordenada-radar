@@ -228,14 +228,14 @@
       document.getElementById('searchInput').value = '';
     }
 
-    function buscarFotos(query) {
-      return fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query + ' fashion') + '&per_page=2&orientation=portrait', {
-        headers: { 'Authorization': 'Client-ID ' + UNSPLASH_KEY }
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(d) { return (d.results || []).map(function(img) { return { url: img.urls.small }; }); })
-      .catch(function() { return []; });
-    }
+   function buscarFotos(query) {
+  return fetch('https://api.pexels.com/v1/search?query=' + encodeURIComponent(query + ' fashion') + '&per_page=2&orientation=portrait', {
+    headers: { 'Authorization': 'oP8jQnjYX2utrotvDaxWRNvamiDGMdwTFm3FL2vDIro6AhlBBwYOFUp3' }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) { return (d.photos || []).map(function(p) { return { url: p.src.medium }; }); })
+  .catch(function() { return []; });
+}
 
     function buscar() {
       if (!verificarKey()) return;

@@ -324,18 +324,13 @@
     }
 
     function buscarFotos(query) {
-      // Usar Unsplash Source API que no requiere autenticación
-      var terminos = [
-        query + ' fashion mexico',
-        query + ' latin america style',
-        query + ' moda latina',
-        query + ' fashion latam'
-      ];
-      var fotos = terminos.map(function(t) {
-        return 'https://source.unsplash.com/400x600/?' + encodeURIComponent(t) + '&' + Math.random();
-      });
-      return Promise.resolve(fotos);
-    }
+     return fetch('https://api.pexels.com/v1/search?query=' + encodeURIComponent(query + ' fashion latina') + '&per_page=4&orientation=portrait', {
+    headers: { 'Authorization': 'oP8jQnjYX2utrotvDaxWRNvamiDGMdwTFm3FL2vDIro6AhlBBwYOFUp3' }
+ })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { return (d.photos || []).map(function(p) { return p.src.medium; }); })
+    .catch(function() { return []; });
+}
 
     function analizar() {
       if (!verificarKey()) return;
