@@ -322,14 +322,13 @@
     function usarSugerencia(el) {
       document.getElementById('searchInput').value = el.textContent;
     }
-
-    function buscarFotos(query) {
-     return fetch('https://api.pexels.com/v1/search?query=' + encodeURIComponent(query + ' fashion latina') + '&per_page=4&orientation=portrait', {
-    headers: { 'Authorization': 'oP8jQnjYX2utrotvDaxWRNvamiDGMdwTFm3FL2vDIro6AhlBBwYOFUp3' }
- })
-    .then(function(r) { return r.json(); })
-    .then(function(d) { return (d.photos || []).map(function(p) { return p.src.medium; }); })
-    .catch(function() { return []; });
+function buscarFotos(query) {
+  return fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query + ' fashion editorial') + '&per_page=4&orientation=portrait', {
+    headers: { 'Authorization': 'Client-ID XEVVXQkBkNtraenFxxG6Xncf33mmQI5rGhNyEZqRLNQ' }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) { return (d.results || []).map(function(p) { return p.urls.small; }); })
+  .catch(function() { return []; });
 }
 
     function analizar() {
@@ -343,7 +342,7 @@
       btn.disabled = true;
       area.innerHTML = '<div class="state-loading"><div class="spinner"></div>Tropicalizando "' + query + '" para México y LATAM...</div>';
 
-      var prompt = 'Eres el analista de tendencias LATAM de Coordenada MX. Tu especialidad es analizar cómo los estilos y tendencias globales de moda se adaptan al contexto latinoamericano (clima cálido/tropical, cultura colorida, identidad mexicana). Analiza el estilo/tendencia: "' + query + '". Responde UNICAMENTE con JSON valido sin markdown ni backticks. Formato exacto: {"tendencia":"nombre oficial","descripcion_global":"que es esta tendencia en el mundo en 2 oraciones","score_latam":75,"score_clima":80,"score_cultura":70,"score_paleta":60,"analisis_clima":"como afecta el clima calido de LATAM a esta tendencia","analisis_cultura":"compatibilidad con la identidad y estilo de vida latinoamericano","analisis_paleta":"analisis de los colores originales y su compatibilidad","version_tropicalizada":"descripcion detallada de como se adapta este estilo para Mexico y LATAM manteniendo su esencia pero ajustandola al contexto local","prendas_latam":["prenda adaptada 1","prenda adaptada 2","prenda adaptada 3","prenda adaptada 4"],"paleta_original":[{"nombre":"nombre color","hex":"#hexcode"}],"paleta_adaptada":[{"nombre":"nombre color adaptado","hex":"#hexcode"}],"foto_query":"termino en ingles para buscar fotos de este estilo adaptado a latinoamerica"} scores del 0 al 100. paleta_original tiene 3-4 colores tipicos de la tendencia global. paleta_adaptada tiene 3-4 colores tropicalizados para LATAM.';
+      var prompt = 'Eres el analista de tendencias LATAM de Coordenada MX. Tu especialidad es analizar cómo los estilos y tendencias globales de moda se adaptan al contexto latinoamericano (clima cálido/tropical, cultura colorida, identidad mexicana). Analiza el estilo/tendencia: "' + query + '". Responde UNICAMENTE con JSON valido sin markdown ni backticks. Formato exacto: {"tendencia":"nombre oficial","descripcion_global":"que es esta tendencia en el mundo en 2 oraciones","score_latam":75,"score_clima":80,"score_cultura":70,"score_paleta":60,"analisis_clima":"como afecta el clima calido de LATAM a esta tendencia","analisis_cultura":"compatibilidad con la identidad y estilo de vida latinoamericano","analisis_paleta":"analisis de los colores originales y su compatibilidad","version_tropicalizada":"descripcion detallada de como se adapta este estilo para Mexico y LATAM manteniendo su esencia pero ajustandola al contexto local","prendas_latam":["prenda adaptada 1","prenda adaptada 2","prenda adaptada 3","prenda adaptada 4"],"paleta_original":[{"nombre":"nombre color","hex":"#hexcode"}],"paleta_adaptada":[{"nombre":"nombre color adaptado","hex":"#hexcode"}],"foto_query":"fashion editorial street style latina photography specific trend"} scores del 0 al 100. paleta_original tiene 3-4 colores tipicos de la tendencia global. paleta_adaptada tiene 3-4 colores tropicalizados para LATAM.';
 
       fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
