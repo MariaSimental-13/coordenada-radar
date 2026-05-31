@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explorador de Conceptos — Coordenada MX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rosa:   #C8526A;
+      --tierra: #C17A3A;
+      --oliva:  #6B7C4A;
+      --morado: #7B5E7B;
+      --crema:  #F5EFE0;
+      --arena:  #E8D9C0;
+      --carbon: #1E1A16;
+      --text:   #2C2520;
+      --muted:  #8A7A6A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--crema); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 3rem; background: rgba(245,239,224,0.94); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(193,122,58,0.15); }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.15em; color: var(--carbon); text-decoration: none; }
+    .nav-logo span { color: var(--rosa); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--rosa); }
+    .nav-cta { background: var(--carbon) !important; color: var(--crema) !important; padding: 8px 20px !important; border-radius: 2px; }
+    .nav-cta:hover { background: var(--rosa) !important; }
+
+    /* TICKER */
+    .ticker { background: var(--morado); padding: 10px 0; overflow: hidden; white-space: nowrap; margin-top: 72px; }
+    .ticker-inner { display: inline-block; animation: ticker 28s linear infinite; font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.85); }
+    .ticker-inner span { color: rgba(255,255,255,0.3); margin: 0 20px; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* HERO SPLIT */
+    .page-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 340px;
+      overflow: hidden;
+    }
+    .hero-content {
+      padding: 3.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .page-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--morado); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
+    .page-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--morado); }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 4vw, 56px); font-weight: 300; color: var(--carbon); line-height: 1.1; margin-bottom: 1rem; }
+    .page-title em { font-style: italic; color: var(--morado); }
+    .page-sub { font-size: 14px; font-weight: 300; color: var(--muted); line-height: 1.8; max-width: 420px; }
+
+    .hero-visual {
+      background: var(--morado);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-visual::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+    }
+    .hero-visual::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .hero-visual-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 80px; font-weight: 700;
+      color: rgba(255,255,255,0.12);
+      line-height: 1;
+      text-align: center;
+      position: relative; z-index: 1;
+      user-select: none;
+    }
+    .hero-visual-label {
+      position: absolute;
+      bottom: 24px; left: 24px;
+      font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* FORM */
+    .explorador-section {
+      padding: 3rem 3rem 5rem;
+      max-width: 900px;
+    }
+
+    .form-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.75rem; display: block;
+    }
+
+    .concept-textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 16px 20px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px; font-weight: 300;
+      color: var(--carbon);
+      background: white;
+      border: 1.5px solid var(--arena);
+      border-radius: 4px;
+      outline: none;
+      resize: vertical;
+      line-height: 1.7;
+      transition: border-color 0.2s;
+      margin-bottom: 1rem;
+    }
+    .concept-textarea::placeholder { color: var(--muted); font-style: italic; }
+    .concept-textarea:focus { border-color: var(--morado); }
+
+    .form-hint {
+      font-size: 12px; font-weight: 300; color: var(--muted);
+      margin-bottom: 1.5rem; line-height: 1.6;
+    }
+    .form-hint strong { color: var(--text); font-weight: 500; }
+
+    .btn-explorar {
+      background: var(--morado); color: white;
+      border: none; padding: 14px 32px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      border-radius: 4px; cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-explorar:hover { opacity: 0.85; }
+    .btn-explorar:active { transform: scale(0.98); }
+    .btn-explorar:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* RESULTS */
+    .results-wrap { margin-top: 3rem; }
+
+    .state-loading { display: flex; align-items: center; gap: 14px; padding: 3rem 0; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--arena); border-top-color: var(--morado); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RESULTADO CARD */
+    .resultado-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(30,26,22,0.08);
+      animation: fadeUp 0.4s ease;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    .resultado-header {
+      background: var(--morado);
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .compat-circle {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 3px solid rgba(255,255,255,0.4);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .compat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px; font-weight: 700; color: white; line-height: 1;
+    }
+    .compat-label {
+      font-size: 9px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.6);
+    }
+
+    .resultado-header-text {}
+    .resultado-titulo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 700; color: white;
+      margin-bottom: 4px;
+    }
+    .resultado-subtitulo {
+      font-size: 13px; color: rgba(255,255,255,0.65); font-weight: 300;
+    }
+
+    .resultado-body { padding: 2rem 2.5rem; }
+
+    .resultado-section-title {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--morado);
+      margin-bottom: 0.75rem; margin-top: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--arena);
+    }
+    .resultado-section-title:first-child { margin-top: 0; }
+
+    .resultado-texto {
+      font-size: 14px; font-weight: 300; color: var(--text);
+      line-height: 1.8; margin-bottom: 0.5rem;
+    }
+
+    .fusiones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 0.5rem;
+    }
+
+    .fusion-chip {
+      background: var(--crema);
+      border: 1.5px solid var(--arena);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .fusion-chip-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; font-weight: 600; color: var(--carbon);
+      margin-bottom: 3px;
+    }
+    .fusion-chip-desc {
+      font-size: 11px; color: var(--muted); font-weight: 300; line-height: 1.5;
+    }
+
+    .alertas-list {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-top: 0.5rem;
+    }
+    .alerta-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px;
+      background: rgba(200,82,106,0.06);
+      border-left: 3px solid var(--rosa);
+      border-radius: 0 6px 6px 0;
+      font-size: 13px; color: var(--text); font-weight: 300; line-height: 1.6;
+    }
+    .alerta-item.ok {
+      background: rgba(107,124,74,0.07);
+      border-left-color: var(--oliva);
+    }
+
+    /* FOOTER */
+    footer { background: var(--carbon); padding: 2.5rem 3rem; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-copy { font-size: 11px; color: rgba(245,239,224,0.2); }
+    .footer-tagline { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: rgba(245,239,224,0.25); }
+    .footer-links-row { display: flex; gap: 2rem; list-style: none; }
+    .footer-links-row a { font-size: 12px; font-weight: 300; color: rgba(245,239,224,0.4); text-decoration: none; transition: color 0.2s; }
+    .footer-links-row a:hover { color: var(--crema); }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-hero { grid-template-columns: 1fr; }
+      .hero-visual { height: 160px; }
+      .explorador-section { padding: 2rem 1.5rem 3rem; }
+      footer { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Coordenada <span>MX</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="radar.html">Radar</a></li>
+      <li><a href="explorador.html" class="active">Explorador</a></li>
+      <li><a href="biblioteca.html">Biblioteca</a></li>
+      <li><a href="consultoria.html" class="nav-cta">Consultoría</a></li>
+    </ul>
+  </nav>
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      EXPLORADOR DE CONCEPTOS <span>•</span> VALIDA TU IDEA <span>•</span> COMPATIBILIDAD CON TENDENCIAS <span>•</span> FUSIONES <span>•</span> ANÁLISIS CREATIVO <span>•</span> ANTES DE INVERTIR <span>•</span>
+      EXPLORADOR DE CONCEPTOS <span>•</span> VALIDA TU IDEA <span>•</span> COMPATIBILIDAD CON TENDENCIAS <span>•</span> FUSIONES <span>•</span> ANÁLISIS CREATIVO <span>•</span> ANTES DE INVERTIR <span>•</span>
+    </div>
+  </div>
+
+  <div class="page-hero">
+    <div class="hero-content">
+      <div class="page-eyebrow">Explorador de Conceptos</div>
+      <h1 class="page-title">Valida tu idea<br><em>antes de invertir.</em></h1>
+      <p class="page-sub">Describe tu concepto de colección y descubre qué tan compatible es con las tendencias actuales. Sugerencias de fusión y alertas incluidas.</p>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-visual-text">IDEA</div>
+      <div class="hero-visual-label">Explorador de Conceptos</div>
+    </div>
+  </div>
+
+  <div class="explorador-section">
+    <label class="form-label" for="conceptInput">Describe tu concepto</label>
+    <textarea
+      class="concept-textarea"
+      id="conceptInput"
+      placeholder="Ej: Colección otoño invierno, minimalista, colores tierra y negro, siluetas oversized, inspiración en arquitectura mexicana..."
+    ></textarea>
+    <p class="form-hint">
+      Sé específico — incluye <strong>colores, prendas, estética, inspiración, temporada</strong> o lo que tengas en mente. Mientras más detalle, mejor el análisis.
+    </p>
+    <button class="btn-explorar" id="btnExplorar" onclick="explorar()">Analizar concepto →</button>
+
+    <div class="results-wrap" id="resultsWrap"></div>
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Coordenada MX</div>
+      <ul class="footer-links-row">
+        <li><a href="radar.html">Radar</a></li>
+        <li><a href="biblioteca.html">Biblioteca</a></li>
+        <li><a href="consultoria.html">Consultoría</a></li>
+      </ul>
+      <div class="footer-tagline">Moda. Datos. Cultura. Latinoamérica.</div>
+    </div>
+  </footer>
+
+  <script>
+    var ANTHROPIC_KEY = 'TU_API_KEY_AQUI';
+
+    function explorar() {
+      var concepto = document.getElementById('conceptInput').value.trim();
+      if (!concepto) {
+        alert('Escribe tu concepto primero 🎨');
+        return;
+      }
+
+      var btn = document.getElementById('btnExplorar');
+      var wrap = document.getElementById('resultsWrap');
+
+      btn.disabled = true;
+      wrap.innerHTML = '<div class="state-loading"><div class="spinner"></div>Analizando tu concepto...</div>';
+
+      var prompt = 'Eres el analista creativo de Coordenada MX, especialista en tendencias de moda latinoamericana. Un diseñador o emprendedor te describe su concepto de colección o producto de moda. Tu trabajo es analizar qué tan compatible es con las tendencias actuales y darle retroalimentación útil. Concepto: "' + concepto + '". Responde UNICAMENTE con JSON valido sin markdown ni backticks. Formato exacto: {"compatibilidad":75,"titulo":"Nombre creativo para este concepto","descripcion":"2-3 oraciones evaluando el concepto en general","fortalezas":["fortaleza 1","fortaleza 2"],"alertas":["elemento debil o riesgoso 1","elemento debil 2"],"sugerencias":["sugerencia concreta 1","sugerencia concreta 2"],"fusiones":[{"nombre":"Tendencia con la que fusionar","descripcion":"Por que funciona esta fusion y como aplicarla"}],"veredicto":"Una frase editorial final sobre el potencial del concepto"} compatibilidad es un numero del 0 al 100. fusiones incluye 2-3 tendencias actuales reales con las que se puede combinar el concepto para fortalecerlo.';
+
+      fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_KEY,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 1500,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [{ role: 'user', content: prompt }]
+        })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.error) throw new Error(data.error.message);
+        var fullText = (data.content || []).filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('');
+        var clean = fullText.replace(/```json/g, '').replace(/```/g, '').trim();
+        var parsed = JSON.parse(clean);
+        renderResultado(parsed);
+        btn.disabled = false;
+      })
+      .catch(function(err) {
+        wrap.innerHTML = '<div style="background:white;border-radius:12px;border-left:4px solid var(--rosa);padding:1.5rem 2rem;"><div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rosa);margin-bottom:0.5rem;">Error</div><div style="font-size:14px;color:var(--muted);">No se pudo analizar. Intenta de nuevo.<br><small>' + err.message + '</small></div></div>';
+        btn.disabled = false;
+      });
+    }
+
+    function renderResultado(d) {
+      var wrap = document.getElementById('resultsWrap');
+
+      var fortalezas = (d.fortalezas || []).map(function(f) {
+        return '<div class="alerta-item ok">✓ ' + f + '</div>';
+      }).join('');
+
+      var alertas = (d.alertas || []).map(function(a) {
+        return '<div class="alerta-item">⚠ ' + a + '</div>';
+      }).join('');
+
+      var sugerencias = (d.sugerencias || []).map(function(s) {
+        return '<div class="alerta-item ok">→ ' + s + '</div>';
+      }).join('');
+
+      var fusiones = (d.fusiones || []).map(function(f) {
+        return '<div class="fusion-chip"><div class="fusion-chip-name">' + f.nombre + '</div><div class="fusion-chip-desc">' + f.descripcion + '</div></div>';
+      }).join('');
+
+      var compatColor = d.compatibilidad >= 70 ? 'rgba(107,124,74,0.4)' : d.compatibilidad >= 40 ? 'rgba(193,122,58,0.4)' : 'rgba(200,82,106,0.4)';
+
+      wrap.innerHTML = '<div class="resultado-card">'
+        + '<div class="resultado-header">'
+        + '<div class="compat-circle" style="border-color:' + compatColor + ';"><div class="compat-num">' + d.compatibilidad + '%</div><div class="compat-label">Compat.</div></div>'
+        + '<div class="resultado-header-text"><div class="resultado-titulo">' + (d.titulo||'Tu concepto') + '</div><div class="resultado-subtitulo">' + (d.descripcion||'') + '</div></div>'
+        + '</div>'
+        + '<div class="resultado-body">'
+        + '<div class="resultado-section-title">Fortalezas</div>'
+        + '<div class="alertas-list">' + fortalezas + '</div>'
+        + '<div class="resultado-section-title">Alertas</div>'
+        + '<div class="alertas-list">' + alertas + '</div>'
+        + '<div class="resultado-section-title">Sugerencias</div>'
+        + '<div class="alertas-list">' + sugerencias + '</div>'
+        + '<div class="resultado-section-title">Fusiones recomendadas</div>'
+        + '<div class="fusiones-grid">' + fusiones + '</div>'
+        + (d.veredicto ? '<div style="margin-top:1.5rem;padding:1.25rem 1.5rem;background:var(--crema);border-radius:8px;font-family:Cormorant Garamond,serif;font-size:18px;font-style:italic;color:var(--carbon);line-height:1.6;">"' + d.veredicto + '"</div>' : '')
+        + '</div></div>';
+    }
+  </script>
+
+</body>
+</html>

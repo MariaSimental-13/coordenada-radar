@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coordenada MX — Inteligencia de Tendencias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rosa:   #C8526A;
+      --tierra: #C17A3A;
+      --oliva:  #6B7C4A;
+      --morado: #7B5E7B;
+      --crema:  #F5EFE0;
+      --arena:  #E8D9C0;
+      --carbon: #1E1A16;
+      --text:   #2C2520;
+      --muted:  #8A7A6A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; background: var(--crema); color: var(--text); overflow-x: hidden; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: rgba(245,239,224,0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(193,122,58,0.15);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 600; letter-spacing: 0.15em;
+      color: var(--carbon); text-decoration: none;
+    }
+    .nav-logo span { color: var(--rosa); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--rosa); }
+    .nav-cta {
+      background: var(--carbon) !important; color: var(--crema) !important;
+      padding: 8px 20px !important; border-radius: 2px;
+    }
+    .nav-cta:hover { background: var(--rosa) !important; }
+
+    /* TICKER */
+    .ticker { background: var(--tierra); padding: 11px 0; overflow: hidden; white-space: nowrap; margin-top: 72px; }
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+      font-size: 10px; font-weight: 500; letter-spacing: 0.22em;
+      text-transform: uppercase; color: rgba(255,255,255,0.85);
+    }
+    .ticker-inner span { color: rgba(255,255,255,0.35); margin: 0 20px; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* HERO */
+    .hero {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 100px);
+      overflow: hidden;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 4rem 3rem; position: relative;
+    }
+    .hero-left::after {
+      content: ''; position: absolute; top: 10%; bottom: 10%; right: 0;
+      width: 1px; background: linear-gradient(to bottom, transparent, var(--tierra) 50%, transparent);
+    }
+    .hero-tag {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--tierra);
+      margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;
+    }
+    .hero-tag::before { content: ''; display: block; width: 32px; height: 1px; background: var(--tierra); }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(44px, 5vw, 72px); font-weight: 300;
+      line-height: 1.05; color: var(--carbon); margin-bottom: 1.5rem;
+    }
+    .hero-title em { font-style: italic; color: var(--rosa); }
+    .hero-title strong { font-weight: 700; display: block; }
+    .hero-sub {
+      font-size: 15px; font-weight: 300; color: var(--muted);
+      line-height: 1.85; max-width: 420px; margin-bottom: 2.5rem;
+    }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--carbon); color: var(--crema);
+      padding: 13px 24px; font-size: 12px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; border-radius: 2px; transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--rosa); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--carbon);
+      padding: 13px 24px; font-size: 12px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; border: 1.5px solid var(--arena);
+      border-radius: 2px; transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--carbon); }
+
+    /* HERO RIGHT — Barragán */
+    .hero-right { position: relative; overflow: hidden; }
+    .barragan-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1.4fr 1fr; height: 100%; gap: 3px;
+      background: var(--arena);
+    }
+    .bb { position: relative; overflow: hidden; transition: transform 0.4s ease; }
+    .bb:hover { transform: scale(1.02); z-index: 2; }
+    .bb-1 { background: var(--rosa); }
+    .bb-2 { background: var(--tierra); }
+    .bb-3 { background: var(--oliva); grid-column: 1 / 3; }
+    .bb-label {
+      position: absolute; bottom: 18px; left: 20px;
+      font-family: 'Cormorant Garamond', serif; font-size: 13px;
+      font-style: italic; color: rgba(255,255,255,0.65); letter-spacing: 0.1em;
+    }
+    .bb-badge {
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(255,255,255,0.18); backdrop-filter: blur(4px);
+      padding: 5px 11px; font-size: 9px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: white; border-radius: 1px;
+    }
+    .bb-num {
+      position: absolute; bottom: 14px; right: 18px;
+      font-family: 'Cormorant Garamond', serif; font-size: 52px;
+      font-weight: 700; color: rgba(255,255,255,0.1); line-height: 1;
+    }
+
+    /* RESUMEN CARDS */
+    .resumen {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; background: var(--arena);
+    }
+    .resumen-card {
+      background: var(--crema); padding: 2.5rem;
+      position: relative; overflow: hidden;
+      transition: background 0.25s;
+    }
+    .resumen-card:hover { background: #EDE5D2; }
+    .resumen-eyebrow {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .resumen-eyebrow::before {
+      content: ''; display: block; width: 20px; height: 1px;
+      background: currentColor;
+    }
+    .resumen-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600; color: var(--carbon);
+      line-height: 1.2; margin-bottom: 0.75rem;
+    }
+    .resumen-sub {
+      font-size: 13px; font-weight: 300; color: var(--muted);
+      line-height: 1.7; margin-bottom: 1.5rem;
+    }
+    .resumen-accent {
+      display: inline-block; width: 32px; height: 32px;
+      border-radius: 50%; margin-bottom: 1rem;
+    }
+    .resumen-link {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--carbon);
+      text-decoration: none; display: flex; align-items: center; gap: 8px;
+      transition: gap 0.2s;
+    }
+    .resumen-link:hover { gap: 14px; color: var(--rosa); }
+    .resumen-card-color { background: var(--carbon); }
+    .resumen-card-color .resumen-title { color: var(--crema); }
+    .resumen-card-color .resumen-sub { color: rgba(245,239,224,0.55); }
+    .resumen-card-color .resumen-eyebrow { color: var(--tierra); }
+    .resumen-card-color .resumen-link { color: var(--crema); }
+
+    /* Swatches colores */
+    .color-swatches { display: flex; gap: 6px; margin-bottom: 1.25rem; }
+    .swatch {
+      width: 28px; height: 28px; border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .swatch:hover { transform: scale(1.2); }
+
+    /* Momentum badge */
+    .momentum-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px;
+      font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .momentum-badge.hot { background: rgba(200,82,106,0.12); color: var(--rosa); }
+    .momentum-badge.up  { background: rgba(107,124,74,0.12); color: var(--oliva); }
+
+    /* FOOTER */
+    footer {
+      background: var(--carbon);
+      padding: 3.5rem 3rem 2rem;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem; margin-bottom: 2.5rem; padding-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 600; color: var(--crema);
+      letter-spacing: 0.12em; margin-bottom: 0.75rem;
+    }
+    .footer-brand span { color: var(--rosa); }
+    .footer-desc { font-size: 13px; font-weight: 300; color: rgba(245,239,224,0.4); line-height: 1.8; max-width: 240px; }
+    .footer-col-title { font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--tierra); margin-bottom: 1rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-links a { font-size: 13px; font-weight: 300; color: rgba(245,239,224,0.45); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--crema); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-copy { font-size: 11px; color: rgba(245,239,224,0.2); letter-spacing: 0.05em; }
+    .footer-tagline { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: rgba(245,239,224,0.25); }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { height: 280px; }
+      .hero-left { padding: 2.5rem 1.5rem; }
+      .resumen { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      footer { padding: 2.5rem 1.5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Coordenada <span>MX</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Inicio</a></li>
+      <li><a href="radar.html">Radar</a></li>
+      <li><a href="explorador.html">Explorador</a></li>
+      <li><a href="biblioteca.html">Biblioteca</a></li>
+      <li><a href="consultoria.html" class="nav-cta">Consultoría</a></li>
+    </ul>
+  </nav>
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      RADAR GLOBAL <span>•</span> TENDENCIAS EN TIEMPO REAL <span>•</span> RADAR ESTRATÉGICO <span>•</span> INTELIGENCIA LATAM <span>•</span> EXPLORADOR DE CONCEPTOS <span>•</span> BIBLIOTECA HISTÓRICA <span>•</span> CONSULTORÍA ESPECIALIZADA <span>•</span>
+      RADAR GLOBAL <span>•</span> TENDENCIAS EN TIEMPO REAL <span>•</span> RADAR ESTRATÉGICO <span>•</span> INTELIGENCIA LATAM <span>•</span> EXPLORADOR DE CONCEPTOS <span>•</span> BIBLIOTECA HISTÓRICA <span>•</span> CONSULTORÍA ESPECIALIZADA <span>•</span>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-tag">Inteligencia de tendencias</div>
+      <h1 class="hero-title">
+        La moda global,<br>
+        <em>interpretada</em><br>
+        <strong>para LATAM.</strong>
+      </h1>
+      <p class="hero-sub">
+        Analiza tendencias globales, interpreta señales emergentes y descubre cómo evolucionan dentro del contexto latinoamericano. Para diseñadoras, estilistas y microempresarios.
+      </p>
+      <div class="hero-btns">
+        <a href="radar.html" class="btn-primary">Explorar radares →</a>
+        <a href="explorador.html" class="btn-secondary">Validar mi idea</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="barragan-grid">
+        <div class="bb bb-1">
+          <div class="bb-badge">↑ En llamas</div>
+          <div class="bb-label">Rosa mexicano</div>
+          <div class="bb-num">01</div>
+        </div>
+        <div class="bb bb-2">
+          <div class="bb-label">Tierra caliente</div>
+          <div class="bb-num">02</div>
+        </div>
+        <div class="bb bb-3">
+          <div class="bb-badge">✦ Nueva</div>
+          <div class="bb-label">Verde tropical</div>
+          <div class="bb-num">03</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 BLOQUES RESUMEN -->
+  <div class="resumen">
+
+    <!-- Radar Global: colores del trimestre -->
+    <div class="resumen-card resumen-card-color">
+      <div class="resumen-eyebrow">Radar Global</div>
+      <div class="color-swatches">
+        <div class="swatch" style="background:#C8526A;" title="Rosa Mexicano"></div>
+        <div class="swatch" style="background:#C17A3A;" title="Tierra"></div>
+        <div class="swatch" style="background:#6B7C4A;" title="Verde Oliva"></div>
+        <div class="swatch" style="background:#7B5E7B;" title="Morado Barragán"></div>
+        <div class="swatch" style="background:#D4A574;" title="Arena"></div>
+      </div>
+      <div class="resumen-title">Colores del trimestre</div>
+      <div class="resumen-sub">Los tonos que dominan las pasarelas y redes sociales este Q2 2026. Tierra, rosa y verde lideran.</div>
+      <a href="radar-global.html" class="resumen-link">Ver análisis completo →</a>
+    </div>
+
+    <!-- Radar LATAM: estilo en tendencia -->
+    <div class="resumen-card">
+      <div class="resumen-eyebrow">Radar LATAM</div>
+      <div class="momentum-badge hot">🔥 En llamas</div>
+      <div class="resumen-title">Meximalismo Urbano</div>
+      <div class="resumen-sub">La fusión de bordados tradicionales con siluetas contemporáneas está pegando fuerte en CDMX y Guadalajara.</div>
+      <a href="radar-latam.html" class="resumen-link">Descubrir más →</a>
+    </div>
+
+    <!-- Biblioteca Histórica: referencia del momento -->
+    <div class="resumen-card">
+      <div class="resumen-eyebrow">Biblioteca Histórica</div>
+      <div class="momentum-badge up">↩ De regreso</div>
+      <div class="resumen-title">Y2K — El eterno retorno</div>
+      <div class="resumen-sub">La estética de los 2000 sigue siendo referente. Miu Miu y Blumarine la reinterpretaron para 2026.</div>
+      <a href="biblioteca.html" class="resumen-link">Explorar archivo →</a>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Coordenada <span>MX</span></div>
+        <div class="footer-desc">Inteligencia de tendencias de moda para el mercado latinoamericano. Datos, cultura e identidad.</div>
+      </div>
+      <div>
+        <div class="footer-col-title">Herramientas</div>
+        <ul class="footer-links">
+          <li><a href="radar.html">Radar</a></li>
+          <li><a href="explorador.html">Explorador de Conceptos</a></li>
+          <li><a href="biblioteca.html">Biblioteca Histórica</a></li>
+          <li><a href="consultoria.html">Consultoría</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Radares</div>
+        <ul class="footer-links">
+          <li><a href="radar-global.html">Radar Global</a></li>
+          <li><a href="radar-estrategico.html">Radar Estratégico</a></li>
+          <li><a href="radar-latam.html">Radar LATAM</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Contacto</div>
+        <ul class="footer-links">
+          <li><a href="mailto:contacto@coordenadamx.com">contacto@coordenadamx.com</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Coordenada MX — Todos los derechos reservados.</div>
+      <div class="footer-tagline">Moda. Datos. Cultura. Latinoamérica.</div>
+    </div>
+  </footer>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radar — Coordenada MX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rosa:   #C8526A;
+      --tierra: #C17A3A;
+      --oliva:  #6B7C4A;
+      --morado: #7B5E7B;
+      --crema:  #F5EFE0;
+      --arena:  #E8D9C0;
+      --carbon: #1E1A16;
+      --text:   #2C2520;
+      --muted:  #8A7A6A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--crema); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: rgba(245,239,224,0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(193,122,58,0.15);
+    }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.15em; color: var(--carbon); text-decoration: none; }
+    .nav-logo span { color: var(--rosa); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--rosa); }
+    .nav-cta { background: var(--carbon) !important; color: var(--crema) !important; padding: 8px 20px !important; border-radius: 2px; }
+    .nav-cta:hover { background: var(--rosa) !important; }
+
+    /* TICKER */
+    .ticker { background: var(--tierra); padding: 11px 0; overflow: hidden; white-space: nowrap; margin-top: 72px; }
+    .ticker-inner { display: inline-block; animation: ticker 30s linear infinite; font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.85); }
+    .ticker-inner span { color: rgba(255,255,255,0.35); margin: 0 20px; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* HEADER */
+    .page-header {
+      padding: 4rem 3rem 2rem;
+      text-align: center;
+    }
+    .page-eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--tierra);
+      margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 12px;
+    }
+    .page-eyebrow::before, .page-eyebrow::after { content: ''; display: block; width: 40px; height: 1px; background: var(--tierra); }
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(42px, 5vw, 68px); font-weight: 300;
+      color: var(--carbon); line-height: 1.1; margin-bottom: 1rem;
+    }
+    .page-title em { font-style: italic; color: var(--rosa); }
+    .page-sub {
+      font-size: 15px; font-weight: 300; color: var(--muted);
+      line-height: 1.8; max-width: 520px; margin: 0 auto;
+    }
+
+    /* CARDS */
+    .radar-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      padding: 3rem 3rem 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .radar-card {
+      border-radius: 20px;
+      overflow: hidden;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 24px rgba(30,26,22,0.08);
+    }
+
+    .radar-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 48px rgba(30,26,22,0.16);
+    }
+
+    .card-top {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem;
+    }
+
+    .card-top-bg {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.4s ease;
+    }
+
+    .radar-card:hover .card-top-bg { transform: scale(1.05); }
+
+    .card-top-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+    }
+
+    .card-num {
+      position: absolute;
+      top: 16px; right: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 64px; font-weight: 700;
+      color: rgba(255,255,255,0.12); line-height: 1;
+      user-select: none;
+    }
+
+    .card-top-badge {
+      position: relative; z-index: 1;
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 10px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: white;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .card-body {
+      background: white;
+      padding: 1.75rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-tag {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.2em;
+      text-transform: uppercase; margin-bottom: 0.6rem;
+    }
+
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 700;
+      color: var(--carbon); line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-desc {
+      font-size: 13px; font-weight: 300; color: var(--muted);
+      line-height: 1.7; margin-bottom: 1.5rem; flex: 1;
+    }
+
+    .card-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-features li {
+      font-size: 12px; font-weight: 400; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .card-features li::before {
+      content: '';
+      display: block; width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent, var(--tierra));
+      flex-shrink: 0;
+    }
+
+    .card-btn {
+      display: block; text-align: center;
+      padding: 12px; border-radius: 10px;
+      font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; text-decoration: none;
+      transition: all 0.2s;
+      background: var(--accent-bg, #f5f0e8);
+      color: var(--accent, var(--tierra));
+    }
+
+    .card-btn:hover {
+      background: var(--accent, var(--tierra));
+      color: white;
+    }
+
+    .card-btn.coming {
+      background: var(--arena);
+      color: var(--muted);
+      cursor: default;
+    }
+
+    /* FOOTER */
+    footer { background: var(--carbon); padding: 3rem 3rem 2rem; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.07); }
+    .footer-copy { font-size: 11px; color: rgba(245,239,224,0.2); letter-spacing: 0.05em; }
+    .footer-tagline { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: rgba(245,239,224,0.25); }
+    .footer-links-row { display: flex; gap: 2rem; list-style: none; }
+    .footer-links-row a { font-size: 12px; font-weight: 300; color: rgba(245,239,224,0.4); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s; }
+    .footer-links-row a:hover { color: var(--crema); }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .radar-cards { grid-template-columns: 1fr; padding: 2rem 1.5rem 3rem; }
+      .page-header { padding: 3rem 1.5rem 1.5rem; }
+      footer { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Coordenada <span>MX</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="radar.html" class="active">Radar</a></li>
+      <li><a href="explorador.html">Explorador</a></li>
+      <li><a href="biblioteca.html">Biblioteca</a></li>
+      <li><a href="consultoria.html" class="nav-cta">Consultoría</a></li>
+    </ul>
+  </nav>
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      RADAR GLOBAL <span>•</span> TENDENCIAS EN TIEMPO REAL <span>•</span> RADAR ESTRATÉGICO <span>•</span> INTELIGENCIA LATAM <span>•</span> ELIGE TU HERRAMIENTA <span>•</span>
+      RADAR GLOBAL <span>•</span> TENDENCIAS EN TIEMPO REAL <span>•</span> RADAR ESTRATÉGICO <span>•</span> INTELIGENCIA LATAM <span>•</span> ELIGE TU HERRAMIENTA <span>•</span>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="page-eyebrow">Herramientas</div>
+    <h1 class="page-title">Elige tu <em>radar.</em></h1>
+    <p class="page-sub">Tres herramientas especializadas para analizar tendencias de moda. Desde exploración general hasta inteligencia latinoamericana profunda.</p>
+  </div>
+
+  <div class="radar-cards">
+
+    <!-- RADAR GLOBAL -->
+    <a href="radar-global.html" class="radar-card">
+      <div class="card-top">
+        <div class="card-top-bg" style="background: linear-gradient(135deg, var(--oliva) 0%, #4a5e35 100%);"></div>
+        <div class="card-top-overlay"></div>
+        <div class="card-num">01</div>
+        <div class="card-top-badge">Acceso libre</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag" style="color:var(--oliva);">Gratuito</div>
+        <div class="card-name">Radar Global</div>
+        <div class="card-desc">Busca cualquier tendencia, color o estética y obtén análisis en tiempo real con imágenes de referencia y momentum actual.</div>
+        <ul class="card-features" style="--accent:var(--oliva);">
+          <li>Búsqueda libre en tiempo real</li>
+          <li>Imágenes de referencia automáticas</li>
+          <li>Momentum: subiendo, en llamas, nueva</li>
+          <li>Análisis editorial incluido</li>
+        </ul>
+        <div class="card-btn" style="--accent:var(--oliva);--accent-bg:rgba(107,124,74,0.1);">Explorar ahora →</div>
+      </div>
+    </a>
+
+    <!-- RADAR ESTRATÉGICO -->
+    <a href="radar-estrategico.html" class="radar-card">
+      <div class="card-top">
+        <div class="card-top-bg" style="background: linear-gradient(135deg, var(--rosa) 0%, #8B2A40 100%);"></div>
+        <div class="card-top-overlay"></div>
+        <div class="card-num">02</div>
+        <div class="card-top-badge">Pro</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag" style="color:var(--rosa);">Suscripción</div>
+        <div class="card-name">Radar Estratégico</div>
+        <div class="card-desc">Reporte trimestral con las 6 tendencias clave del periodo y forecast probabilístico para tomar decisiones de negocio.</div>
+        <ul class="card-features" style="--accent:var(--rosa);">
+          <li>6 tendencias clasificadas por trimestre</li>
+          <li>2 en llamas · 2 estables · 2 en declive</li>
+          <li>Forecast a 2-3 trimestres</li>
+          <li>Reporte PDF descargable</li>
+        </ul>
+        <div class="card-btn" style="--accent:var(--rosa);--accent-bg:rgba(200,82,106,0.1);">Próximamente →</div>
+      </div>
+    </a>
+
+    <!-- RADAR LATAM -->
+    <a href="radar-latam.html" class="radar-card">
+      <div class="card-top">
+        <div class="card-top-bg" style="background: linear-gradient(135deg, var(--tierra) 0%, #8B4A1A 100%);"></div>
+        <div class="card-top-overlay"></div>
+        <div class="card-num">03</div>
+        <div class="card-top-badge">Premium</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag" style="color:var(--tierra);">Premium</div>
+        <div class="card-name">Radar LATAM</div>
+        <div class="card-desc">Tendencias globales filtradas por contexto cultural mexicano y latinoamericano. Clima, identidad y estilo de vida convergen.</div>
+        <ul class="card-features" style="--accent:var(--tierra);">
+          <li>Filtro cultural latinoamericano</li>
+          <li>Score de permanencia LATAM</li>
+          <li>Paleta tropicalizada por región</li>
+          <li>Análisis por ciudad mexicana</li>
+        </ul>
+        <div class="card-btn" style="--accent:var(--tierra);--accent-bg:rgba(193,122,58,0.1);">Próximamente →</div>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Coordenada MX</div>
+      <ul class="footer-links-row">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="explorador.html">Explorador</a></li>
+        <li><a href="biblioteca.html">Biblioteca</a></li>
+        <li><a href="consultoria.html">Consultoría</a></li>
+      </ul>
+      <div class="footer-tagline">Moda. Datos. Cultura. Latinoamérica.</div>
+    </div>
+  </footer>
+
+</body>
+</html>

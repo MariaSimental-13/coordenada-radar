@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consultoría — Coordenada MX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rosa:   #C8526A;
+      --tierra: #C17A3A;
+      --oliva:  #6B7C4A;
+      --morado: #7B5E7B;
+      --crema:  #F5EFE0;
+      --arena:  #E8D9C0;
+      --carbon: #1E1A16;
+      --text:   #2C2520;
+      --muted:  #8A7A6A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--crema); color: var(--text); overflow-x: hidden; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 3rem; background: rgba(245,239,224,0.94); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(193,122,58,0.15); }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.15em; color: var(--carbon); text-decoration: none; }
+    .nav-logo span { color: var(--rosa); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--rosa); }
+    .nav-links a.active { color: var(--rosa); }
+    .nav-cta { background: var(--rosa) !important; color: white !important; padding: 8px 20px !important; border-radius: 2px; }
+
+    /* HERO */
+    .hero {
+      margin-top: 72px;
+      background: var(--carbon);
+      padding: 5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      min-height: 480px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: 'CONSULTORÍA';
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 160px; font-weight: 700;
+      color: rgba(255,255,255,0.03);
+      position: absolute; bottom: -20px; right: -20px;
+      white-space: nowrap; pointer-events: none; line-height: 1;
+    }
+    .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--tierra); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+    .hero-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--tierra); }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 5vw, 64px); font-weight: 300; color: var(--crema); line-height: 1.1; margin-bottom: 1.5rem; }
+    .hero-title em { font-style: italic; color: var(--rosa); }
+    .hero-sub { font-size: 15px; font-weight: 300; color: rgba(245,239,224,0.6); line-height: 1.8; max-width: 440px; margin-bottom: 2rem; }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--rosa); color: white;
+      padding: 14px 28px; font-size: 12px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none; border-radius: 4px;
+      transition: opacity 0.2s;
+    }
+    .hero-cta:hover { opacity: 0.85; }
+
+    .hero-stats { display: flex; flex-direction: column; gap: 1.5rem; position: relative; z-index: 1; }
+    .stat-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.5rem; }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 700; color: var(--tierra); line-height: 1; margin-bottom: 4px; }
+    .stat-desc { font-size: 13px; font-weight: 300; color: rgba(245,239,224,0.5); line-height: 1.5; }
+
+    /* SERVICIOS */
+    .servicios-section { padding: 5rem 3rem; }
+    .section-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--tierra); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
+    .section-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--tierra); }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 4vw, 52px); font-weight: 300; color: var(--carbon); line-height: 1.1; margin-bottom: 3rem; }
+    .section-title em { font-style: italic; color: var(--rosa); }
+
+    .servicios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 4rem; }
+
+    .servicio-card { background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 2px 16px rgba(30,26,22,0.06); transition: transform 0.25s, box-shadow 0.25s; position: relative; overflow: hidden; }
+    .servicio-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(30,26,22,0.1); }
+    .servicio-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--color, var(--tierra)); border-radius: 16px 16px 0 0; }
+
+    .servicio-icon { font-size: 28px; margin-bottom: 1rem; }
+    .servicio-nombre { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--carbon); margin-bottom: 0.6rem; }
+    .servicio-desc { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.7; margin-bottom: 1.25rem; }
+    .servicio-precio { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--carbon); }
+    .servicio-precio span { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 300; color: var(--muted); }
+
+    /* PARA QUIEN */
+    .para-quien { background: var(--arena); padding: 4rem 3rem; }
+    .perfiles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 2.5rem; }
+    .perfil-card { background: var(--crema); border-radius: 12px; padding: 1.5rem; }
+    .perfil-emoji { font-size: 28px; margin-bottom: 0.75rem; }
+    .perfil-titulo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--carbon); margin-bottom: 0.4rem; }
+    .perfil-desc { font-size: 12px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+    /* CONTACTO */
+    .contacto-section { padding: 5rem 3rem; max-width: 700px; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 13px 16px;
+      font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 300;
+      color: var(--carbon); background: white;
+      border: 1.5px solid var(--arena); border-radius: 4px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--rosa); }
+    .form-textarea { min-height: 120px; resize: vertical; line-height: 1.7; }
+    .form-select { appearance: none; cursor: pointer; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .btn-enviar { background: var(--carbon); color: var(--crema); border: none; padding: 15px 36px; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+    .btn-enviar:hover { background: var(--rosa); }
+
+    .form-nota { font-size: 12px; font-weight: 300; color: var(--muted); margin-top: 1rem; line-height: 1.6; }
+
+    footer { background: var(--carbon); padding: 2.5rem 3rem; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-copy { font-size: 11px; color: rgba(245,239,224,0.2); }
+    .footer-tagline { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: rgba(245,239,224,0.25); }
+    .footer-links-row { display: flex; gap: 2rem; list-style: none; }
+    .footer-links-row a { font-size: 12px; font-weight: 300; color: rgba(245,239,224,0.4); text-decoration: none; transition: color 0.2s; }
+    .footer-links-row a:hover { color: var(--crema); }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 3rem 1.5rem; min-height: auto; }
+      .servicios-section, .para-quien, .contacto-section { padding: 3rem 1.5rem; }
+      .servicios-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Coordenada <span>MX</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="radar.html">Radar</a></li>
+      <li><a href="explorador.html">Explorador</a></li>
+      <li><a href="biblioteca.html">Biblioteca</a></li>
+      <li><a href="consultoria.html" class="active nav-cta">Consultoría</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">Consultoría Especializada</div>
+      <h1 class="hero-title">Tu negocio de moda,<br><em>con dirección.</em></h1>
+      <p class="hero-sub">Análisis personalizado para diseñadoras, microempresarios y marcas emergentes que necesitan tomar decisiones de moda con datos reales del mercado latinoamericano.</p>
+      <a href="#contacto" class="hero-cta">Agendar consulta →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-desc">tipos de consultoría según tu necesidad y presupuesto</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">MX</div>
+        <div class="stat-desc">enfoque 100% en el mercado mexicano y latinoamericano</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">+5</div>
+        <div class="stat-desc">años de datos de tendencias analizados en el modelo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="servicios-section">
+    <div class="section-eyebrow">Servicios</div>
+    <h2 class="section-title">¿Qué necesitas<br><em>analizar?</em></h2>
+
+    <div class="servicios-grid">
+      <div class="servicio-card" style="--color:var(--oliva);">
+        <div class="servicio-icon">🎯</div>
+        <div class="servicio-nombre">Consulta Express</div>
+        <div class="servicio-desc">Una sesión de 60 minutos para resolver una pregunta específica: ¿esta tendencia funciona en mi ciudad? ¿qué conviene comprar este trimestre?</div>
+        <div class="servicio-precio">$800 <span>pesos / sesión</span></div>
+      </div>
+
+      <div class="servicio-card" style="--color:var(--rosa);">
+        <div class="servicio-icon">📊</div>
+        <div class="servicio-nombre">Análisis de Negocio</div>
+        <div class="servicio-desc">Reporte completo de tendencias aplicadas a tu negocio específico: ciudad, giro, cliente objetivo y temporada. Entregable PDF incluido.</div>
+        <div class="servicio-precio">$3,500 <span>pesos / reporte</span></div>
+      </div>
+
+      <div class="servicio-card" style="--color:var(--tierra);">
+        <div class="servicio-icon">🗺️</div>
+        <div class="servicio-nombre">Estrategia de Colección</div>
+        <div class="servicio-desc">Acompañamiento completo para diseñadoras: validación de concepto, paleta de colores, tendencias aplicadas, probabilidad de éxito en LATAM.</div>
+        <div class="servicio-precio">$8,000 <span>pesos / proyecto</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="para-quien">
+    <div style="padding: 0 0 0 0; max-width:1100px; margin: 0 auto;">
+      <div class="section-eyebrow">Para quién es</div>
+      <h2 class="section-title" style="margin-bottom:0;">No para grandes<br><em>corporaciones.</em></h2>
+      <div class="perfiles-grid">
+        <div class="perfil-card">
+          <div class="perfil-emoji">👗</div>
+          <div class="perfil-titulo">Diseñadora emergente</div>
+          <div class="perfil-desc">Vas a lanzar tu primera colección y quieres saber si tu concepto tiene mercado real.</div>
+        </div>
+        <div class="perfil-card">
+          <div class="perfil-emoji">🏪</div>
+          <div class="perfil-titulo">Dueña de boutique</div>
+          <div class="perfil-desc">Necesitas saber qué surtir este trimestre sin desperdiciar presupuesto en tendencias que no van a vender.</div>
+        </div>
+        <div class="perfil-card">
+          <div class="perfil-emoji">📱</div>
+          <div class="perfil-titulo">Vendedora en línea</div>
+          <div class="perfil-desc">Vendes en Instagram o Mercado Libre y quieres anticiparte a lo que va a pegar antes que tu competencia.</div>
+        </div>
+        <div class="perfil-card">
+          <div class="perfil-emoji">✂️</div>
+          <div class="perfil-titulo">Estilista independiente</div>
+          <div class="perfil-desc">Quieres justificar tus propuestas con datos reales y posicionarte como referente de tendencias en tu ciudad.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contacto-section" id="contacto">
+    <div class="section-eyebrow">Contacto</div>
+    <h2 class="section-title">Cuéntanos<br><em>tu proyecto.</em></h2>
+
+    <form onsubmit="enviarForm(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input class="form-input" type="text" placeholder="Tu nombre" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="tu@email.com" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ciudad</label>
+        <input class="form-input" type="text" placeholder="¿En qué ciudad está tu negocio?" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de consultoría</label>
+        <select class="form-select">
+          <option value="">Selecciona una opción</option>
+          <option>Consulta Express — $800</option>
+          <option>Análisis de Negocio — $3,500</option>
+          <option>Estrategia de Colección — $8,000</option>
+          <option>No estoy segura, quiero más información</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cuéntanos tu proyecto</label>
+        <textarea class="form-textarea" placeholder="¿Qué tipo de negocio tienes? ¿Qué necesitas analizar? ¿Cuál es tu duda principal sobre tendencias?" required></textarea>
+      </div>
+      <button type="submit" class="btn-enviar">Enviar mensaje →</button>
+      <p class="form-nota">Te respondemos en menos de 48 horas. Toda la información que compartas es confidencial.</p>
+    </form>
+
+    <div id="formSuccess" style="display:none; margin-top:2rem; background:white; border-radius:12px; border-left:4px solid var(--oliva); padding:1.5rem 2rem;">
+      <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--oliva);margin-bottom:0.5rem;">Mensaje enviado</div>
+      <div style="font-size:15px;font-family:Cormorant Garamond,serif;font-style:italic;color:var(--carbon);">¡Gracias! Te contactamos pronto 🫶</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Coordenada MX</div>
+      <ul class="footer-links-row">
+        <li><a href="radar.html">Radar</a></li>
+        <li><a href="explorador.html">Explorador</a></li>
+        <li><a href="biblioteca.html">Biblioteca</a></li>
+      </ul>
+      <div class="footer-tagline">Moda. Datos. Cultura. Latinoamérica.</div>
+    </div>
+  </footer>
+
+  <script>
+    function enviarForm(e) {
+      e.preventDefault();
+      document.getElementById('formSuccess').style.display = 'block';
+      e.target.style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>

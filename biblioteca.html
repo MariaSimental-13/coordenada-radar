@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca Histórica — Coordenada MX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rosa:   #C8526A;
+      --tierra: #C17A3A;
+      --oliva:  #6B7C4A;
+      --morado: #7B5E7B;
+      --crema:  #F5EFE0;
+      --arena:  #E8D9C0;
+      --carbon: #1E1A16;
+      --text:   #2C2520;
+      --muted:  #8A7A6A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--crema); color: var(--text); overflow-x: hidden; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 3rem; background: rgba(245,239,224,0.94); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(193,122,58,0.15); }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.15em; color: var(--carbon); text-decoration: none; }
+    .nav-logo span { color: var(--rosa); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--rosa); }
+    .nav-cta { background: var(--carbon) !important; color: var(--crema) !important; padding: 8px 20px !important; border-radius: 2px; }
+    .nav-cta:hover { background: var(--rosa) !important; }
+
+    .ticker { background: var(--carbon); padding: 10px 0; overflow: hidden; white-space: nowrap; margin-top: 72px; }
+    .ticker-inner { display: inline-block; animation: ticker 30s linear infinite; font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+    .ticker-inner span { color: rgba(255,255,255,0.25); margin: 0 20px; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* HEADER */
+    .page-header { padding: 3.5rem 3rem 2rem; border-bottom: 1px solid var(--arena); display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+    .page-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--tierra); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
+    .page-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--tierra); }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 4vw, 58px); font-weight: 300; color: var(--carbon); line-height: 1.1; }
+    .page-title em { font-style: italic; color: var(--tierra); }
+    .page-sub { font-size: 14px; font-weight: 300; color: var(--muted); line-height: 1.8; max-width: 380px; padding-bottom: 6px; }
+
+    /* DECADAS NAV */
+    .decadas-nav { display: flex; gap: 0; overflow-x: auto; background: var(--carbon); padding: 0 3rem; scrollbar-width: none; }
+    .decadas-nav::-webkit-scrollbar { display: none; }
+    .decada-btn { padding: 14px 24px; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); background: transparent; border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; border-bottom: 2px solid transparent; }
+    .decada-btn:hover { color: rgba(255,255,255,0.8); }
+    .decada-btn.active { color: var(--tierra); border-bottom-color: var(--tierra); }
+
+    /* CONTENIDO */
+    .biblioteca-content { padding: 3rem; }
+
+    .decada-section { display: none; animation: fadeUp 0.35s ease; }
+    .decada-section.visible { display: block; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    .decada-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem; align-items: center; }
+    .decada-year { font-family: 'Cormorant Garamond', serif; font-size: clamp(80px, 12vw, 140px); font-weight: 700; color: var(--arena); line-height: 1; margin-bottom: 0.5rem; }
+    .decada-titulo { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--carbon); line-height: 1.2; margin-bottom: 1rem; }
+    .decada-titulo em { font-style: italic; color: var(--tierra); }
+    .decada-texto { font-size: 14px; font-weight: 300; color: var(--muted); line-height: 1.85; }
+    .decada-visual { background: var(--carbon); border-radius: 12px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .decada-visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(193,122,58,0.3) 0%, transparent 60%); }
+    .decada-visual-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: rgba(255,255,255,0.4); text-align: center; padding: 2rem; position: relative; z-index: 1; }
+
+    /* TENDENCIAS DE LA DECADA */
+    .tendencias-titulo { font-size: 11px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--tierra); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--arena); }
+
+    .tendencias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 2rem; }
+
+    .tendencia-historica {
+      background: white; border-radius: 12px;
+      padding: 1.5rem; box-shadow: 0 2px 12px rgba(30,26,22,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tendencia-historica:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(30,26,22,0.1); }
+
+    .th-year { font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--tierra); margin-bottom: 0.5rem; }
+    .th-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--carbon); line-height: 1.2; margin-bottom: 0.5rem; }
+    .th-desc { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.65; margin-bottom: 1rem; }
+    .th-footer { display: flex; align-items: center; justify-content: space-between; }
+    .th-estado { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+    .th-estado.regreso { background: rgba(107,124,74,0.12); color: var(--oliva); }
+    .th-estado.archivo { background: rgba(138,122,106,0.12); color: var(--muted); }
+    .th-estado.vigente { background: rgba(200,82,106,0.12); color: var(--rosa); }
+
+    /* INSIGHT HISTORICO */
+    .insight-historico { background: var(--carbon); border-radius: 12px; padding: 2rem 2.5rem; margin-top: 1rem; }
+    .ih-label { font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--tierra); margin-bottom: 0.75rem; }
+    .ih-texto { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; color: rgba(245,239,224,0.8); line-height: 1.6; }
+
+    footer { background: var(--carbon); padding: 2.5rem 3rem; margin-top: 2rem; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-copy { font-size: 11px; color: rgba(245,239,224,0.2); }
+    .footer-tagline { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: rgba(245,239,224,0.25); }
+    .footer-links-row { display: flex; gap: 2rem; list-style: none; }
+    .footer-links-row a { font-size: 12px; font-weight: 300; color: rgba(245,239,224,0.4); text-decoration: none; transition: color 0.2s; }
+    .footer-links-row a:hover { color: var(--crema); }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-header { padding: 2.5rem 1.5rem 1.5rem; }
+      .decadas-nav { padding: 0 1.5rem; }
+      .biblioteca-content { padding: 2rem 1.5rem; }
+      .decada-intro { grid-template-columns: 1fr; }
+      footer { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Coordenada <span>MX</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="radar.html">Radar</a></li>
+      <li><a href="explorador.html">Explorador</a></li>
+      <li><a href="biblioteca.html" class="active">Biblioteca</a></li>
+      <li><a href="consultoria.html" class="nav-cta">Consultoría</a></li>
+    </ul>
+  </nav>
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      BIBLIOTECA HISTÓRICA <span>•</span> ARCHIVO DE MODA <span>•</span> Y2K <span>•</span> AÑOS 90 <span>•</span> MINIMALISMO 2000s <span>•</span> HIPSTER ERA <span>•</span> ATHLEISURE <span>•</span> COTTAGECORE <span>•</span> LA MODA ES CÍCLICA <span>•</span>
+      BIBLIOTECA HISTÓRICA <span>•</span> ARCHIVO DE MODA <span>•</span> Y2K <span>•</span> AÑOS 90 <span>•</span> MINIMALISMO 2000s <span>•</span> HIPSTER ERA <span>•</span> ATHLEISURE <span>•</span> COTTAGECORE <span>•</span> LA MODA ES CÍCLICA <span>•</span>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Biblioteca Histórica</div>
+      <h1 class="page-title">El pasado explica<br><em>el futuro.</em></h1>
+    </div>
+    <p class="page-sub">La moda es cíclica. Entender qué pasó antes te ayuda a anticipar qué viene. Explora tendencias por década.</p>
+  </div>
+
+  <div class="decadas-nav">
+    <button class="decada-btn active" onclick="mostrarDecada('90s')">Años 90</button>
+    <button class="decada-btn" onclick="mostrarDecada('2000s')">2000s — Y2K</button>
+    <button class="decada-btn" onclick="mostrarDecada('2010s')">2010s</button>
+    <button class="decada-btn" onclick="mostrarDecada('2020s')">2020s</button>
+  </div>
+
+  <div class="biblioteca-content">
+
+    <!-- 90s -->
+    <div class="decada-section visible" id="sec-90s">
+      <div class="decada-intro">
+        <div>
+          <div class="decada-year">90s</div>
+          <div class="decada-titulo">El minimalismo<br><em>y la rebeldía.</em></div>
+          <p class="decada-texto">Los años 90 fueron una contradicción hermosa: el minimalismo de Calvin Klein y Helmut Lang convivía con el grunge de Kurt Cobain y la explosión del hip hop. México absorbió todo — desde los jeans de mezclilla hasta los colores neón de la cultura rave.</p>
+        </div>
+        <div class="decada-visual">
+          <div class="decada-visual-text">"Less is more"<br>pero también<br>flannel y Dr. Martens.</div>
+        </div>
+      </div>
+
+      <div class="tendencias-titulo">Tendencias icónicas de la década</div>
+      <div class="tendencias-grid">
+        <div class="tendencia-historica">
+          <div class="th-year">1991 — 1997</div>
+          <div class="th-name">Grunge</div>
+          <div class="th-desc">Flannel, jeans rotos, Dr. Martens y capas. Kurt Cobain como icono involuntario. La anti-moda que se convirtió en moda.</div>
+          <div class="th-footer"><div class="th-estado regreso">↩ De regreso</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">1993 — 1999</div>
+          <div class="th-name">Minimalismo Calvin Klein</div>
+          <div class="th-desc">Siluetas limpias, colores neutros, materialidad premium. El lujo silencioso que inspiró el Quiet Luxury de 2023.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 Vigente</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">1995 — 2000</div>
+          <div class="th-name">Slip Dress</div>
+          <div class="th-desc">Vestidos de seda resbaladiza usados como outer. Kate Moss y Courtney Love lo definieron. Regresó con fuerza en 2024.</div>
+          <div class="th-footer"><div class="th-estado regreso">↩ De regreso</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">1990 — 1999</div>
+          <div class="th-name">Hip Hop Fashion</div>
+          <div class="th-desc">Baggy jeans, snapbacks, Timberlands y logomania. FUBU, Karl Kani. La calle dictando moda por primera vez.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 Vigente</div></div>
+        </div>
+      </div>
+      <div class="insight-historico">
+        <div class="ih-label">Lección de los 90s</div>
+        <div class="ih-texto">"El minimalismo de los 90 no era vacío — era reacción. Hoy el Quiet Luxury repite ese ciclo: el exceso genera cansancio, el cansancio genera silencio."</div>
+      </div>
+    </div>
+
+    <!-- 2000s -->
+    <div class="decada-section" id="sec-2000s">
+      <div class="decada-intro">
+        <div>
+          <div class="decada-year">Y2K</div>
+          <div class="decada-titulo">El futuro que<br><em>nunca llegó.</em></div>
+          <p class="decada-texto">Los 2000 apostaron por un futuro metálico, brillante y tecnológico que nunca se materializó — pero la estética quedó grabada. Low rise, Von Dutch, Paris Hilton y el nacimiento de la cultura celebrity como motor de moda.</p>
+        </div>
+        <div class="decada-visual">
+          <div class="decada-visual-text">Von Dutch.<br>Juicy Couture.<br>Low rise forever.</div>
+        </div>
+      </div>
+
+      <div class="tendencias-titulo">Tendencias icónicas de la década</div>
+      <div class="tendencias-grid">
+        <div class="tendencia-historica">
+          <div class="th-year">2000 — 2006</div>
+          <div class="th-name">Y2K Metálico</div>
+          <div class="th-desc">Plateados, holográficos, vinilo. El futuro vestido como disco de los 70 reinterpretado. Miu Miu lo resucitó en 2022.</div>
+          <div class="th-footer"><div class="th-estado regreso">↩ De regreso</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2000 — 2008</div>
+          <div class="th-name">Low Rise</div>
+          <div class="th-desc">La cintura baja que dividió generaciones. Britney Spears, Christina Aguilera. Regresó oficialmente en 2023 y sigue.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 Vigente</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2001 — 2007</div>
+          <div class="th-name">Logomania</div>
+          <div class="th-desc">Monogramas gigantes, logos en todo. LV, Gucci, Fendi. Regresó más fuerte en 2018 y nunca se fue del todo.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 Vigente</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2003 — 2009</div>
+          <div class="th-name">Boho Chic</div>
+          <div class="th-desc">Capas, flequillos, plataformas. Sienna Miller y Kate Moss en Glastonbury. La primera tendencia que Instagram habría destruido.</div>
+          <div class="th-footer"><div class="th-estado archivo">— En archivo</div></div>
+        </div>
+      </div>
+      <div class="insight-historico">
+        <div class="ih-label">Lección de los 2000s</div>
+        <div class="ih-texto">"Y2K demuestra que la nostalgia tiene un ciclo de 20 años. Lo que fue ridículo en 2010 es icónico en 2025. La moda no muere — hiberna."</div>
+      </div>
+    </div>
+
+    <!-- 2010s -->
+    <div class="decada-section" id="sec-2010s">
+      <div class="decada-intro">
+        <div>
+          <div class="decada-year">2010s</div>
+          <div class="decada-titulo">Instagram<br><em>lo cambió todo.</em></div>
+          <p class="decada-texto">La década en que las redes sociales se convirtieron en la pasarela real. El hipster, el normcore, el athleisure y el streetwear de lujo coexistieron en un mundo donde cualquiera podía ser influencer.</p>
+        </div>
+        <div class="decada-visual">
+          <div class="decada-visual-text">Normcore.<br>Athleisure.<br>Todo es contenido.</div>
+        </div>
+      </div>
+
+      <div class="tendencias-titulo">Tendencias icónicas de la década</div>
+      <div class="tendencias-grid">
+        <div class="tendencia-historica">
+          <div class="th-year">2010 — 2015</div>
+          <div class="th-name">Hipster Aesthetic</div>
+          <div class="th-desc">Flannel, lentes de armazón grueso, café de especialidad y vinilo. La ironía como estética. Ya no regresa — fue demasiado específico.</div>
+          <div class="th-footer"><div class="th-estado archivo">— En archivo</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2013 — 2020</div>
+          <div class="th-name">Athleisure</div>
+          <div class="th-desc">Lululemon, leggings como pantalón, sneakers con todo. Normalizó la ropa deportiva en contextos formales para siempre.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 Vigente</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2015 — 2019</div>
+          <div class="th-name">Streetwear de Lujo</div>
+          <div class="th-desc">Supreme x Louis Vuitton. Virgil Abloh. Off-White. El momento en que la calle y la alta costura colapsaron en uno.</div>
+          <div class="th-footer"><div class="th-estado archivo">— En archivo</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2019 — presente</div>
+          <div class="th-name">Cottagecore</div>
+          <div class="th-desc">Vestidos florales, cestas de mimbre, huertos y nostalgia rural. Nació en Tumblr, explotó en TikTok durante la pandemia.</div>
+          <div class="th-footer"><div class="th-estado regreso">↩ Evoluciona</div></div>
+        </div>
+      </div>
+      <div class="insight-historico">
+        <div class="ih-label">Lección de los 2010s</div>
+        <div class="ih-texto">"Instagram democratizó la moda y la mató al mismo tiempo. Cuando todos pueden seguir una tendencia al instante, las tendencias duran meses, no años."</div>
+      </div>
+    </div>
+
+    <!-- 2020s -->
+    <div class="decada-section" id="sec-2020s">
+      <div class="decada-intro">
+        <div>
+          <div class="decada-year">2020s</div>
+          <div class="decada-titulo">La era de<br><em>las microestéticas.</em></div>
+          <p class="decada-texto">TikTok fragmentó la moda en mil microestéticas simultáneas. Cottagecore, Dark Academia, Quiet Luxury, Gorpcore, Barbiecore — todo coexiste, nada domina. La identidad personal reemplazó las tendencias monolíticas.</p>
+        </div>
+        <div class="decada-visual">
+          <div class="decada-visual-text">Quiet Luxury.<br>Barbiecore.<br>Dark Academia.<br>Todo a la vez.</div>
+        </div>
+      </div>
+
+      <div class="tendencias-titulo">Tendencias icónicas de la década</div>
+      <div class="tendencias-grid">
+        <div class="tendencia-historica">
+          <div class="th-year">2022 — presente</div>
+          <div class="th-name">Quiet Luxury</div>
+          <div class="th-desc">Sin logos, sin excesos. Loro Piana, The Row, Brunello Cucinelli. El lujo que se nota solo si sabes. Succession lo popularizó.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 Vigente</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2023</div>
+          <div class="th-name">Barbiecore</div>
+          <div class="th-desc">Rosa en todos sus tonos. La película de Barbie generó el fenómeno de marketing de moda más grande de la década.</div>
+          <div class="th-footer"><div class="th-estado archivo">— En declive</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2024 — presente</div>
+          <div class="th-name">Balletcore</div>
+          <div class="th-desc">Mallas, tutús, zapatillas de ballet como calzado urbano. La feminidad delicada como resistencia estética al mundo ruidoso.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 Vigente</div></div>
+        </div>
+        <div class="tendencia-historica">
+          <div class="th-year">2024 — presente</div>
+          <div class="th-name">Meximalismo</div>
+          <div class="th-desc">El retorno de los colores, bordados y referencias culturales mexicanas como respuesta al minimalismo europeo impuesto.</div>
+          <div class="th-footer"><div class="th-estado vigente">🔥 En llamas</div></div>
+        </div>
+      </div>
+      <div class="insight-historico">
+        <div class="ih-label">Lección de los 2020s</div>
+        <div class="ih-texto">"En la era de TikTok, una tendencia puede nacer y morir en 6 meses. El verdadero poder está en las estéticas con raíz cultural — esas no tienen fecha de caducidad."</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Coordenada MX</div>
+      <ul class="footer-links-row">
+        <li><a href="radar.html">Radar</a></li>
+        <li><a href="explorador.html">Explorador</a></li>
+        <li><a href="consultoria.html">Consultoría</a></li>
+      </ul>
+      <div class="footer-tagline">Moda. Datos. Cultura. Latinoamérica.</div>
+    </div>
+  </footer>
+
+  <script>
+    function mostrarDecada(id) {
+      document.querySelectorAll('.decada-section').forEach(function(s) { s.classList.remove('visible'); });
+      document.querySelectorAll('.decada-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.getElementById('sec-' + id).classList.add('visible');
+      event.target.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
